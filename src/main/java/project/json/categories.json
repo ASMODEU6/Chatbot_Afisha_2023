@@ -1,0 +1,11 @@
+[ {"id":9,"slug":"cinema","name":"кинопоказы"},
+  {"id":1,"slug":"concert","name":"концерты"},
+  {"id":47,"slug":"entertainment","name":"развлечения"},
+  {"id":6,"slug":"exhibition","name":"выставки"},
+  {"id":8,"slug":"festival","name":"фестивали"},
+  {"id":36,"slug":"kids","name":"детям"},
+  {"id":4,"slug":"party","name":"вечеринки"},
+  {"id":28,"slug":"quest","name":"квесты"},
+  {"id":2,"slug":"theater","name":"спектакли"},
+  {"id":7,"slug":"tour","name":"экскурсии"}]
+

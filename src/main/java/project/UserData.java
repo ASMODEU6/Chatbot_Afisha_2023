@@ -4,8 +4,10 @@ import java.util.Date;
 
 public class UserData {
     private int currentQuestion = 0;
+    private int currentPage = 0;
     private String currentCity = null;
     private Date currentDate = null;
+    private String currentCategories = null;
     private String currentException = null;
 
     public int getCurrentQuestion() {
@@ -38,5 +40,21 @@ public class UserData {
 
     public void setCurrentException(String currentException) {
         this.currentException = currentException;
+    }
+
+    public String getCurrentCategories() {
+        return currentCategories;
+    }
+
+    public void setCurrentCategories(String currentCategories) {
+        this.currentCategories = currentCategories;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
     }
 }

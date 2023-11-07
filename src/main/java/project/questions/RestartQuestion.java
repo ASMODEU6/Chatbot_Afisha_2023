@@ -3,7 +3,7 @@ package project.questions;
 import project.UserData;
 public class RestartQuestion extends AbstractQuestion {
     public RestartQuestion() {
-        super("Если захотите еще что-нибуть посмотреть, напишите мне \"старт\".");
+        super("\nВведите номер страницы или напишите мне \"старт\" для нового поиска.");
     }
 
     @Override
@@ -12,6 +12,10 @@ public class RestartQuestion extends AbstractQuestion {
             userData.setCurrentQuestion(0);
             userData.setCurrentCity(null);
             userData.setCurrentDate(null);
+            userData.setCurrentCategories(null);
+            userData.setCurrentPage(0);
+        } else if (Integer.parseInt(msg) > 0) {
+
         }
         return false;
     }

@@ -1,15 +1,24 @@
 package project;
 
 import org.apache.commons.text.WordUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import project.questions.*;
+
+import java.util.Iterator;
+
 public class DialogueManager {
     private final AbstractQuestion[] questions;
+
     public DialogueManager(){
-        questions = new AbstractQuestion[4];
+        questions = new AbstractQuestion[5];
         questions[0] = new CityQuestion();
         questions[1] = new DateQuestion();
-        questions[2] = new EndQuestion();
-        questions[3] = new RestartQuestion();
+        questions[2] = new CategoriesQuestion();
+        questions[3] = new EndQuestion();
+        questions[4] = new RestartQuestion();
     }
     public String askQuestion(UserData userData, String msg){
         String result = "";
@@ -20,18 +29,35 @@ public class DialogueManager {
             switch (userData.getCurrentException()) {
                 case "invalidDateFormat" -> result += "Некорректная даты!\n\n";
                 case "incorrectResponse" -> result += "Некорректный ответ!\n\n";
-                case "cityIsNotSupported" -> result += "Я пока что не могу посмотреть мероприятия в городе " + WordUtils.capitalizeFully(msg) + ". Пожалуйста, укажите другой город!\n\n";
                 case "cityIsNotInTheList" -> result += "Сервис в указанном вами городе не доступен или название города указанно неверно!\n\n";
+                case "categoriesIsNotInTheList" -> result += "\n\n";
                 default -> throw new IllegalStateException("Unexpected value: " + userData.getCurrentException());
             }
             userData.setCurrentException(null);
         }
 
-        if (userData.getCurrentQuestion() == 3 && userData.getCurrentDate() != null && userData.getCurrentCity() != null){
-            result += "Здесь должен быть результат парсинга по запросу: " + userData.getCurrentCity() + "; "
-                    + userData.getCurrentDate().toString() + ".\n\nСпасибо что пользуетесь нашим ботом!\n\n";
-            userData.setCurrentCity(null);
-            userData.setCurrentDate(null);
+        if (userData.getCurrentQuestion() == 4 && userData.getCurrentDate() != null && userData.getCurrentCity() != null && userData.getCurrentCategories() != null){
+            APIClient apiClient = new APIClient();
+
+            Object obj;
+            try {
+                obj = new JSONParser().parse(apiClient.getEventsObject(userData));
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+
+            JSONObject jsonObject = (JSONObject) obj;
+            JSONArray resultsArray = (JSONArray) jsonObject.get("results");
+
+            result += "Найдено " + jsonObject.get("count") + " событий:\n\n";
+            Iterator resultsItr = resultsArray.iterator();
+
+            for (int i = 1; resultsItr.hasNext(); i++) {
+                JSONObject resultObject = (JSONObject) resultsItr.next();
+                result += i + ". \"" + WordUtils.capitalizeFully(resultObject.get("title").toString()) + "\"\n" +
+                        "   Возрастное ограничение: " + resultObject.get("age_restriction") + "\n" +
+                        "   Cсылка: " + resultObject.get("site_url") + "\n" ;
+            }
         }
 
         result += questions[userData.getCurrentQuestion()].getQuestion();

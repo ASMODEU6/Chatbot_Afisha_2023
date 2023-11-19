@@ -14,12 +14,16 @@ import org.json.simple.parser.ParseException;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
 
 public class APIClient {
     final CloseableHttpClient httpclient = HttpClients.createDefault();
+    private final UserData userData;
 
-    public String getEventsObject (UserData userData){
+    public APIClient(UserData userData) {
+        this.userData = userData;
+    }
+
+    public String getEventsObject (){
         long unixTime = userData.getCurrentDate().getTime() / 1000L;
 
         Object obj;

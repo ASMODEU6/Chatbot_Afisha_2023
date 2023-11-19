@@ -19,23 +19,20 @@ public class DialogueManager {
         exceptionArray = new String[5];
         exceptionArray[0] = "Сервис в указанном вами городе не доступен или название города указанно неверно!\n\n";
         exceptionArray[1] = "Некорректная даты!\n\n";
-        exceptionArray[2] = "";
-        exceptionArray[3] = "Некорректный ответ!\n\n";
-        exceptionArray[4] = "";
+        exceptionArray[2] = "Некорректная категория!\n\n";
+        exceptionArray[3] = "";
 
         userDataArray = new Object[5];
         userDataArray[0] = userData.getCurrentCity();
         userDataArray[1] = userData.getCurrentDate();
         userDataArray[2] = userData.getCurrentCategories();
         userDataArray[3] = null;
-        userDataArray[4] = null;
 
         questions = new AbstractQuestion[5];
         questions[0] = new CityQuestion();
         questions[1] = new DateQuestion();
         questions[2] = new CategoriesQuestion();
-        questions[3] = new EndQuestion();
-        questions[4] = new RestartQuestion();
+        questions[3] = new RestartQuestion();
     }
     public String askQuestion(UserData userData, String msg){
         String result = "";
@@ -52,7 +49,7 @@ public class DialogueManager {
                     }
                 }
                 case 2 -> userData.setCurrentCategories(msg);
-                case 4 -> {
+                case 3 -> {
                     userData.setCurrentQuestion(-1);
                     userData.setCurrentCity(null);
                     userData.setCurrentDate(null);
@@ -61,22 +58,16 @@ public class DialogueManager {
                 }
             }
             userData.setCurrentQuestion(userData.getCurrentQuestion() + 1);
-        } else if (msg != null && userDataArray[userData.getCurrentQuestion()] == null && !questions[3].checkAnswer(msg)) {
-            userData.setCurrentQuestion(0);
-            userData.setCurrentCity(null);
-            userData.setCurrentDate(null);
-            userData.setCurrentCategories(null);
-            userData.setCurrentPage(0);
         } else {
             result += exceptionArray[userData.getCurrentQuestion()];
         }
 
-        if (userData.getCurrentQuestion() == 4 && userData.getCurrentDate() != null && userData.getCurrentCity() != null && userData.getCurrentCategories() != null){
-            APIClient apiClient = new APIClient();
+        if (userData.getCurrentQuestion() == 3 && userData.getCurrentDate() != null && userData.getCurrentCity() != null && userData.getCurrentCategories() != null){
+            APIClient apiClient = new APIClient(userData);
 
             Object obj;
             try {
-                obj = new JSONParser().parse(apiClient.getEventsObject(userData));
+                obj = new JSONParser().parse(apiClient.getEventsObject());
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }

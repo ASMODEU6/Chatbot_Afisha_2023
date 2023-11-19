@@ -11,7 +11,7 @@ import java.util.Iterator;
 
 public class Validator {
 
-    public static boolean checkCity(UserData userData, String cityName){
+    public static boolean checkCity(/*UserData userData,*/ String cityName){
         cityName = cityName.toUpperCase();
 
         Object obj;
@@ -24,14 +24,11 @@ public class Validator {
         JSONObject jsonObject = (JSONObject) obj;
         JSONObject cityObject = (JSONObject) jsonObject.get("city");
 
-        if (cityObject.containsKey(cityName.toUpperCase())){
-            return true;
-        }
-        userData.setCurrentException("cityIsNotInTheList");
-        return false;
+        return cityObject.containsKey(cityName.toUpperCase());
+        //userData.setCurrentException("cityIsNotInTheList");
     }
 
-    public static boolean checkCategories(UserData userData, String categoriesName){
+    public static boolean checkCategories(/*UserData userData,*/ String categoriesName){
         categoriesName = categoriesName.toUpperCase();
 
         Object obj;
@@ -43,14 +40,13 @@ public class Validator {
 
         JSONArray categoriesArray = (JSONArray) obj;
 
-        Iterator categoriesItr = categoriesArray.iterator();
-        while (categoriesItr.hasNext()) {
-            JSONObject categoriesObject = (JSONObject) categoriesItr.next();
-            if (categoriesObject.get("name").toString().toUpperCase().equals(categoriesName)){
+        for (Object o : categoriesArray) {
+            JSONObject categoriesObject = (JSONObject) o;
+            if (categoriesObject.get("name").toString().toUpperCase().equals(categoriesName)) {
                 return true;
             }
         }
-        userData.setCurrentException("categoriesIsNotInTheList");
+        //userData.setCurrentException("categoriesIsNotInTheList");
         return false;
     }
 }

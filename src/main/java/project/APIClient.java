@@ -18,10 +18,6 @@ import java.util.Iterator;
 
 public class APIClient {
     final CloseableHttpClient httpclient = HttpClients.createDefault();
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
-    }
 
     public String getEventsObject (UserData userData){
         long unixTime = userData.getCurrentDate().getTime() / 1000L;
@@ -45,10 +41,9 @@ public class APIClient {
         }
 
         JSONArray categoriesArray = (JSONArray) obj;
-        Iterator categoriesItr = categoriesArray.iterator();
-        while (categoriesItr.hasNext()) {
-            JSONObject categoriesObject = (JSONObject) categoriesItr.next();
-            if (categoriesObject.get("name").toString().toUpperCase().equals(userData.getCurrentCategories().toUpperCase())){
+        for (Object o : categoriesArray) {
+            JSONObject categoriesObject = (JSONObject) o;
+            if (categoriesObject.get("name").toString().equalsIgnoreCase(userData.getCurrentCategories())) {
                 categories = categoriesObject.get("slug").toString();
             }
         }

@@ -6,8 +6,10 @@ import project.UserData;
 public class StartCommand extends AbstractCommand{
     public void doCommand(UserData userData) {
         userData.setCurrentQuestion(0);
-        userData.setCurrentDate(null);
         userData.setCurrentCity(null);
+        userData.setCurrentDate(null);
+        userData.setCurrentCategories(null);
+        userData.setCurrentPage(0);
     }
     public String getDescription() {
         return "перезапуск бота";

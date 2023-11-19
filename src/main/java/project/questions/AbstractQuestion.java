@@ -1,7 +1,5 @@
 package project.questions;
 
-import project.UserData;
-
 public class AbstractQuestion {
     private final String question;
     public AbstractQuestion(String question){
@@ -11,7 +9,7 @@ public class AbstractQuestion {
         return question;
     }
 
-    public boolean checkAnswer(String msg, UserData userData){
+    public boolean checkAnswer(String msg){
         return false;
     }
 

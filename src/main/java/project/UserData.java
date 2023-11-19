@@ -8,7 +8,6 @@ public class UserData {
     private String currentCity = null;
     private Date currentDate = null;
     private String currentCategories = null;
-    private String currentException = null;
 
     public int getCurrentQuestion() {
         return currentQuestion;
@@ -32,14 +31,6 @@ public class UserData {
 
     public void setCurrentDate(Date currentDate) {
         this.currentDate = currentDate;
-    }
-
-    public String getCurrentException() {
-        return currentException;
-    }
-
-    public void setCurrentException(String currentException) {
-        this.currentException = currentException;
     }
 
     public String getCurrentCategories() {

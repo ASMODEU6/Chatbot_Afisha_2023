@@ -7,12 +7,29 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import project.questions.*;
 
+import java.text.SimpleDateFormat;
 import java.util.Iterator;
 
 public class DialogueManager {
     private final AbstractQuestion[] questions;
+    private final Object[] userDataArray;
+    private final String[] exceptionArray;
 
-    public DialogueManager(){
+    public DialogueManager(UserData userData){
+        exceptionArray = new String[5];
+        exceptionArray[0] = "Сервис в указанном вами городе не доступен или название города указанно неверно!\n\n";
+        exceptionArray[1] = "Некорректная даты!\n\n";
+        exceptionArray[2] = "";
+        exceptionArray[3] = "Некорректный ответ!\n\n";
+        exceptionArray[4] = "";
+
+        userDataArray = new Object[5];
+        userDataArray[0] = userData.getCurrentCity();
+        userDataArray[1] = userData.getCurrentDate();
+        userDataArray[2] = userData.getCurrentCategories();
+        userDataArray[3] = null;
+        userDataArray[4] = null;
+
         questions = new AbstractQuestion[5];
         questions[0] = new CityQuestion();
         questions[1] = new DateQuestion();
@@ -23,17 +40,35 @@ public class DialogueManager {
     public String askQuestion(UserData userData, String msg){
         String result = "";
 
-        if (msg != null && questions[userData.getCurrentQuestion()].checkAnswer(msg, userData)) {
-            userData.setCurrentQuestion(userData.getCurrentQuestion() + 1);
-        } else if (userData.getCurrentException() != null){
-            switch (userData.getCurrentException()) {
-                case "invalidDateFormat" -> result += "Некорректная даты!\n\n";
-                case "incorrectResponse" -> result += "Некорректный ответ!\n\n";
-                case "cityIsNotInTheList" -> result += "Сервис в указанном вами городе не доступен или название города указанно неверно!\n\n";
-                case "categoriesIsNotInTheList" -> result += "\n\n";
-                default -> throw new IllegalStateException("Unexpected value: " + userData.getCurrentException());
+        if (msg != null && userDataArray[userData.getCurrentQuestion()] == null && questions[userData.getCurrentQuestion()].checkAnswer(msg)) {
+            switch (userData.getCurrentQuestion()) {
+                case 0 -> userData.setCurrentCity(msg);
+                case 1 -> {
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+                    try {
+                        userData.setCurrentDate(formatter.parse(msg));
+                    } catch (java.text.ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                case 2 -> userData.setCurrentCategories(msg);
+                case 4 -> {
+                    userData.setCurrentQuestion(-1);
+                    userData.setCurrentCity(null);
+                    userData.setCurrentDate(null);
+                    userData.setCurrentCategories(null);
+                    userData.setCurrentPage(0);
+                }
             }
-            userData.setCurrentException(null);
+            userData.setCurrentQuestion(userData.getCurrentQuestion() + 1);
+        } else if (msg != null && userDataArray[userData.getCurrentQuestion()] == null && !questions[3].checkAnswer(msg)) {
+            userData.setCurrentQuestion(0);
+            userData.setCurrentCity(null);
+            userData.setCurrentDate(null);
+            userData.setCurrentCategories(null);
+            userData.setCurrentPage(0);
+        } else {
+            result += exceptionArray[userData.getCurrentQuestion()];
         }
 
         if (userData.getCurrentQuestion() == 4 && userData.getCurrentDate() != null && userData.getCurrentCity() != null && userData.getCurrentCategories() != null){

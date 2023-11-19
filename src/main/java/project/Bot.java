@@ -34,14 +34,14 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     public void onUpdateReceived(Update update) {
-        DialogueManager manager = new DialogueManager();
-        ConsoleCommand console = new ConsoleCommand();
         Message message = update.getMessage();
         Long userId = message.getFrom().getId();
         String messageText = message.getText();
 
-
         if (!users.containsKey(userId)) users.put(userId, new UserData());
+
+        DialogueManager manager = new DialogueManager(users.get(userId));
+        ConsoleCommand console = new ConsoleCommand();
 
         if (!Objects.equals(console.findCommand(users.get(userId), messageText), messageText)) {
             sendText(userId, console.findCommand(users.get(userId), messageText));

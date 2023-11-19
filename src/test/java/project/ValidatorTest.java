@@ -1,16 +1,22 @@
 package project;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class ValidatorTest {
+class ValidatorTest {
+
+    public Validator validator = new Validator();
 
     @Test
-    public void checkCity() {
+    void checkCity() {
+        assertTrue(validator.checkCity("Москва"));
+        assertFalse(validator.checkCity("Moskow"));
     }
 
     @Test
-    public void checkCategories() {
+    void checkCategories() {
+        assertTrue(validator.checkCategories("Концерты"));
+        assertFalse(validator.checkCategories("Koncert"));
     }
 }

@@ -60,7 +60,7 @@ public class DialogueManager {
                 }
             }
             userData.setCurrentQuestion(userData.getCurrentQuestion() + 1);
-        } else {
+        } else if (msg != null){
             result += exceptionArray[userData.getCurrentQuestion()];
         }
 

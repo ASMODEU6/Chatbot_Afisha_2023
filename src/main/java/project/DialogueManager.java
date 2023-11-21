@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Iterator;
 
 public class DialogueManager {
-    private final AbstractQuestion[] questions;
+    private static AbstractQuestion[] questions;
     private final Object[] userDataArray;
     private final String[] exceptionArray;
 
@@ -54,7 +54,9 @@ public class DialogueManager {
                     userData.setCurrentCity(null);
                     userData.setCurrentDate(null);
                     userData.setCurrentCategories(null);
-                    userData.setCurrentPage(0);
+                    userData.setCurrentPage(1);
+                    userData.setMaxPage(1);
+                    userData.clearResultsArray();
                 }
             }
             userData.setCurrentQuestion(userData.getCurrentQuestion() + 1);
@@ -63,30 +65,62 @@ public class DialogueManager {
         }
 
         if (userData.getCurrentQuestion() == 3 && userData.getCurrentDate() != null && userData.getCurrentCity() != null && userData.getCurrentCategories() != null){
-            APIClient apiClient = new APIClient(userData);
-
-            Object obj;
-            try {
-                obj = new JSONParser().parse(apiClient.getEventsObject());
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
-            }
-
-            JSONObject jsonObject = (JSONObject) obj;
-            JSONArray resultsArray = (JSONArray) jsonObject.get("results");
-
-            result += "Найдено " + jsonObject.get("count") + " событий:\n\n";
-            Iterator resultsItr = resultsArray.iterator();
-
-            for (int i = 1; resultsItr.hasNext(); i++) {
-                JSONObject resultObject = (JSONObject) resultsItr.next();
-                result += i + ". \"" + WordUtils.capitalizeFully(resultObject.get("title").toString()) + "\"\n" +
-                        "   Возрастное ограничение: " + resultObject.get("age_restriction") + "\n" +
-                        "   Cсылка: " + resultObject.get("site_url") + "\n" ;
-            }
+            result += getAPIClientResultsList(userData);
+        } else {
+            result += questions[userData.getCurrentQuestion()].getQuestion();
         }
 
-        result += questions[userData.getCurrentQuestion()].getQuestion();
+        return result;
+    }
+
+    static String getAPIClientResultsList(UserData userData) {
+        String result = "";
+
+        APIClient apiClient = new APIClient(userData);
+
+        Object obj;
+        try {
+            obj = new JSONParser().parse(apiClient.getEventsListObject());
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        JSONObject jsonObject = (JSONObject) obj;
+        JSONArray resultsArray = (JSONArray) jsonObject.get("results");
+
+        userData.setMaxPage(((int)(Integer.parseInt(jsonObject.get("count").toString())-0.1)/8)+1);
+        userData.setCountResults(Integer.parseInt(jsonObject.get("count").toString()));
+
+        result += "Найдено " + jsonObject.get("count") + " событий:\n\n";
+        Iterator resultsItr = resultsArray.iterator();
+
+        for (int i = 1; resultsItr.hasNext(); i++) {
+            JSONObject resultObject = (JSONObject) resultsItr.next();
+            userData.setResultsArray(i + (userData.getCurrentPage()-1)*8, resultObject.get("id").toString());
+            result += (i + (userData.getCurrentPage()-1)*8) + ". \"" + WordUtils.capitalizeFully(resultObject.get("title").toString()) + "\"\n";
+        }
+
+        return result;
+    }
+
+    static String getAPIClientResult(UserData userData, Integer id){
+        String result = "";
+
+        APIClient apiClient = new APIClient(userData);
+
+        Object obj;
+        try {
+            obj = new JSONParser().parse(apiClient.getEventObject(id));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        JSONObject jsonObject = (JSONObject) obj;
+
+        result += WordUtils.capitalizeFully(jsonObject.get("title").toString())+"\n\n" +
+                jsonObject.get("description").toString() + "\n" +
+                "Возрастное ограничение - " + jsonObject.get("age_restriction").toString() + "\n" +
+                "Сайт: " + jsonObject.get("site_url");
 
         return result;
     }

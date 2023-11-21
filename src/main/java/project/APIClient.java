@@ -23,7 +23,23 @@ public class APIClient {
         this.userData = userData;
     }
 
-    public String getEventsObject (){
+    public String getEventObject(Integer id){
+
+        final HttpUriRequest httpGet = new HttpGet("https://kudago.com/public-api/v1.4/events/" +
+                id + "/?" +
+                "lang=&" +
+                "fields=title,description,age_restriction,site_url&"+
+                "text_format=text");
+        try (
+                CloseableHttpResponse response1 = httpclient.execute(httpGet)
+        ){
+            final HttpEntity entity1 = response1.getEntity();
+            return EntityUtils.toString(entity1);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public String getEventsListObject(){
         long unixTime = userData.getCurrentDate().getTime() / 1000L;
 
         Object obj;
@@ -54,7 +70,9 @@ public class APIClient {
 
         final HttpUriRequest httpGet = new HttpGet("https://kudago.com/public-api/v1.4/events/?" +
                 "lang=ru&" +
-                "fields=next,id,dates,title,description,place,age_restriction,site_url,categories&" +
+                "page=" + userData.getCurrentPage() + "&" +
+                "page_size=8&" +
+                "fields=id,title&" +
                 "expand=&" +
                 "order_by=&" +
                 "text_format=text&" +

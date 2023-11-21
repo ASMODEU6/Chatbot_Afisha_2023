@@ -9,7 +9,9 @@ public class StartCommand extends AbstractCommand{
         userData.setCurrentCity(null);
         userData.setCurrentDate(null);
         userData.setCurrentCategories(null);
-        userData.setCurrentPage(0);
+        userData.setCurrentPage(1);
+        userData.setMaxPage(1);
+        userData.clearResultsArray();
     }
     public String getDescription() {
         return "перезапуск бота";

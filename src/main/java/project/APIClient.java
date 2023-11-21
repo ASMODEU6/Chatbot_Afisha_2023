@@ -68,6 +68,7 @@ public class APIClient {
             }
         }
 
+
         final HttpUriRequest httpGet = new HttpGet("https://kudago.com/public-api/v1.4/events/?" +
                 "lang=ru&" +
                 "page=" + userData.getCurrentPage() + "&" +

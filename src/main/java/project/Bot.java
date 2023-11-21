@@ -143,10 +143,16 @@ public class Bot extends TelegramLongPollingBot {
         keyboardRowListTwo.add(last);
         keyboardRowListTwo.add(next);
 
-        keyboardM1 = InlineKeyboardMarkup.builder()
-                .keyboardRow(keyboardRowListOne)
-                .keyboardRow(List.of(next))
-                .build();
+        if (userData.getMaxPage() > 1){
+            keyboardM1 = InlineKeyboardMarkup.builder()
+                    .keyboardRow(keyboardRowListOne)
+                    .keyboardRow(List.of(next))
+                    .build();
+        } else {
+            keyboardM1 = InlineKeyboardMarkup.builder()
+                    .keyboardRow(keyboardRowListOne)
+                    .build();
+        }
 
         keyboardM2 = InlineKeyboardMarkup.builder()
                 .keyboardRow(keyboardRowListOne)
@@ -250,10 +256,10 @@ public class Bot extends TelegramLongPollingBot {
                 sendText(userId, console.findCommand(users.get(chatId), messageText), keyboardArray[users.get(chatId).getCurrentQuestion()]);
                 sendText(userId, manager.askQuestion(users.get(chatId), null), keyboardArray[users.get(chatId).getCurrentQuestion()]);
             } else if (users.get(chatId).getCurrentQuestion() == 2) {
-                manager.getAPIClientResultsList(users.get(chatId));
+                manager.askQuestion(users.get(chatId), messageText);
+                users.get(chatId).setCurrentQuestion(users.get(userId).getCurrentQuestion() - 1);
                 setInlineKeyboard(users.get(chatId));
-                if (users.get(chatId).getMaxPage() > 1) sendText(userId, manager.askQuestion(users.get(chatId), messageText), keyboardM1);
-                else sendText(userId, manager.askQuestion(users.get(chatId), messageText), keyboardArray[users.get(chatId).getCurrentQuestion()]);
+                sendText(userId, manager.askQuestion(users.get(chatId), messageText), keyboardM1);
                 sendText(userId, "Напишите мне \"старт\" для нового поиска.", keyboardArray[users.get(chatId).getCurrentQuestion()]);
             } else {
                 sendText(userId, manager.askQuestion(users.get(chatId), messageText), keyboardArray[users.get(chatId).getCurrentQuestion()]);

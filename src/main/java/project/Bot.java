@@ -23,10 +23,10 @@ public class Bot extends TelegramLongPollingBot {
     private final HashMap<Long, UserData> users;
     private ReplyKeyboardMarkup[] keyboardArray;
 
-    private InlineKeyboardMarkup keyboardM1;
-    private InlineKeyboardMarkup keyboardM2;
-    private InlineKeyboardMarkup keyboardM3;
-    private InlineKeyboardMarkup keyboardM4;
+    public InlineKeyboardMarkup keyboardM1;
+    public InlineKeyboardMarkup keyboardM2;
+    public InlineKeyboardMarkup keyboardM3;
+    public InlineKeyboardMarkup keyboardM4;
 
     public Bot(){
 //        setInlineKeyboard();
